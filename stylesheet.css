@@ -1,0 +1,80 @@
+/* 
+    Document   : styles.css
+    Created on : Sep 23, 2012, 7:28:13 PM
+    Author     : shane
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+body {
+    background-color: #edf5f3;
+    font-family: Arial;
+}
+h1 {
+    font-family: Arial;
+    text-shadow: 0px -2px 0px #333,
+                  0px 2px 2px #666;
+}
+a {
+    color: #006666;
+}
+a:visited {
+    color: #006666;
+}
+a:hover {
+    color: #00cccc;
+    font-weight: bold;
+}
+.buttons{
+    background-color: #6e7070;
+    color: white;
+    font-weight: bold;
+}
+.deviceAction{
+    float:left;
+}
+.deviceTableHeader {
+    background-color: black;
+    color: white;
+    font-size: 125%;
+}
+.hidden{
+    display:none;
+}
+.hidden:nth-child(even) {
+    background-color: #bfebdf;
+}
+.hidden:nth-child(odd) {
+    background-color: #aad1c7;
+}
+.datapoint{
+    margin-left: 3em;
+}
+.expand{
+    font-weight: bold;
+}
+.expand:hover{
+    color: #1ca2ff;
+}
+.deviceDescription{
+    float: right;
+
+}
+.formUpdateMetric{
+    float: left;
+    
+    
+}
+
+#deviceTable {
+    background-color: #c4cdcb;
+    width: 90%;
+}
+#deviceInfo{
+    background-color: #e6eeee;
+    width: 40%;
+    
+}
