@@ -78,6 +78,7 @@
             ON d.device = dm.device
             WHERE dm.iddevicemetrics = '$thisDeviceMetricIndex'
             AND d.metric = '$thisDeviceMetricIndex'
+			AND d.timestamp >= TIMESTAMP(CURDATE())
             ORDER BY d.timestamp DESC
             LIMIT 1";
         $result = $db->query($query);
