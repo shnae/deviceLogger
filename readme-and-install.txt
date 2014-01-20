@@ -6,6 +6,8 @@ Basic Installation:
 copy the settings.txt and devicereader.py files to /etc/devicereader folder on your server.  
 copy the entire contents of the php-frontend folder to your web directory (on ubuntu w/apache, usually /var/www/).  You should probably create secure passwords for your accounts and change the settings/passwords for the devicelogger account on sql server and in database.php
 run the sql-create-script.sql script on your mysql server to create the database
+run apt-get install python-mysqldb && apt-get install lsof 
+visudo: add www-data to Sudoers for lsof/devicereader directory
 
 Configuring devices:
 

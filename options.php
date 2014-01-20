@@ -35,19 +35,24 @@ echo <<<END
    <html lang="en">
         <head>
             <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Devices View</title>
-            <link rel="stylesheet" type="text/css" href="stylesheet.css" />
-            <link rel="stylesheet"
-                href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery.ui.all.css">
+                        <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+            <!-- Latest compiled and minified JavaScript -->
+            <script src="js/bootstrap.min.js"></script>
+
             <script 
-                src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
-            </script>
-            <script
-                src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
+                src="js/jquery-1.10.2.min.js">
             </script>
         </head>
         <body>
-            
+            <div class="container">
+<div class="span8">
         <header>
         <h1>Device: Options</h1>
         <h2>Description:Set General Options:</h2>
@@ -92,6 +97,6 @@ echo <<<END
 END;
 
 
-echo "</section></body></html>";
+echo "</section></div></div></body></html>";
 
 ?>

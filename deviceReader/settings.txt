@@ -1,0 +1,23 @@
+logger.internal
+devicelogger
+devicelogger
+devicelogger
+
+
+
+
+
+
+
+HEY THERE! LOOKEE HERE.  This is the settings file.
+The lines above are settings for connecting to the DB, etc.
+Settings items in order of appearance (very important, don't
+add additional spaces or leave blank rows, the deviceReader
+goes line by line through this file from the beginning).
+
+Line 1: DB server hostname or ip address
+Line 2: DB server username
+Line 3: DB server password
+Line 4: Database name
+
+

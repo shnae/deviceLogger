@@ -51,7 +51,7 @@ echo <<<END
         <head>
             <meta charset="utf-8">
             <title>Devices View</title>
-            <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+            
             <link rel="stylesheet"
                 href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery.ui.all.css">
             <script 
