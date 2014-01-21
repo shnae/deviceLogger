@@ -9,6 +9,7 @@ $deviceDescription = $deviceInfo["Description"];
 $deviceMake = $deviceInfo["Make"];
 $deviceModel = $deviceInfo["Model"];
 $deviceUri = $deviceInfo["Url"];
+include_once 'inc_htmlBoilerplate.php';
 //header:
 echo <<<END
    <!DOCTYPE html> 
@@ -16,24 +17,22 @@ echo <<<END
         <head>
             <meta charset="utf-8">
             <title>Devices View</title>
-            <link rel="stylesheet" type="text/css" href="stylesheet.css" />
-            <link rel="stylesheet"
-                href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery.ui.all.css">
-            <script 
-                src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
-            </script>
-            <script
-                src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
-            </script>
-            <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="jquplot/jquery.jqplot.css" />
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+            <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+            <link rel="stylesheet" href="css/jqueryui1.8.16/base/jquery.ui.all.css">
+            <script src="js/jquery-1.10.2.min.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jqueryui1.8.16/jquery-ui.js"></script>
+
 
         </head>
         <body>
-            
+        $html_AllPagesNavigation
+        <div class="container">
         <header>
         <h1>Edit Device: $deviceName</h1>
         </header>
+        
         <section id="deviceInfo">
             <div class="deviceUpdateForm">
                 <form action="index.php" method="post">
@@ -123,7 +122,7 @@ END;
     echo "<script>$(\"#newMetricLink\").click(function() {
             $(\"#hiddenForm\").show('slow')});</script>";
 
-    echo "<br></body></html>";
+    echo "<br></div></body></html>";
 
 
 ?>

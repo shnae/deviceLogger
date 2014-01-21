@@ -22,6 +22,7 @@ $deviceMake = $deviceInfo["Make"];
 $deviceModel = $deviceInfo["Model"];
 $deviceUrl = $deviceInfo["Url"];
 //header:
+include_once 'inc_htmlBoilerplate.php';
 echo <<<END
    <!DOCTYPE html> 
    <html lang="en">
@@ -29,18 +30,14 @@ echo <<<END
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Devices View</title>
-                        <!-- Latest compiled and minified CSS -->
+                       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Device Logger: Devices List</title>
             <link rel="stylesheet" href="css/bootstrap.min.css">
-
-            <!-- Optional theme -->
+            <link rel="stylesheet" href="css/bootstrap.css">
             <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-            <!-- Latest compiled and minified JavaScript -->
+            <script src="js/jquery-1.10.2.min.js"></script> 
             <script src="js/bootstrap.min.js"></script>
-
-            <script 
-                src="js/jquery-1.10.2.min.js">
-            </script>
+            <script src="js/bootstrap.js"></script>
             <script
                 src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
             </script>
@@ -59,10 +56,11 @@ echo <<<END
 
         </head>
         <body>
-            
+        $html_AllPagesNavigation
+        <div class="container">
         <header>
-        <h1>Device: $deviceName</h1>
-        <h2>Description: $deviceDescription</h2>
+        <h1>$deviceName <small>$deviceDescription</small></h1>
+        
         </header>
         <section id="deviceInfo">
             <div class="deviceSpecs">
@@ -74,6 +72,7 @@ echo <<<END
         </section>
         <section id="datapoints"><h2>Datapoints:</h2><br></section>
 END;
+
 $DeviceDataPoints = getDeviceDataPointArray($deviceID);
     foreach ($DeviceDataPoints as $dp) { //iterate through each device metric 
         //and list the latest datapoint
@@ -88,7 +87,7 @@ $DeviceDataPoints = getDeviceDataPointArray($deviceID);
         
     }
  
-       echo "<a href=\"index.php\">back to devices list</a></body></html>";
+       echo "<a href=\"index.php\">back to devices list</a></div></body>$html_AllPagesFooter</html>";
 
 
 function makeChart($datapoints, $id, $title, $height, $width) {

@@ -1,29 +1,27 @@
 <?php
-
+include_once 'database.php';
+include_once 'inc_htmlBoilerplate.php';
 echo <<<END
    <!DOCTYPE html> 
    <html lang="en">
         <head>
             <meta charset="utf-8">
+             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Create New Device</title>
-            
-            <!-- Latest compiled and minified CSS -->
+            <title>Devices View</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Device Logger: Devices List</title>
             <link rel="stylesheet" href="css/bootstrap.min.css">
-
-            <!-- Optional theme -->
+            <link rel="stylesheet" href="css/bootstrap.css">
             <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-            <!-- Latest compiled and minified JavaScript -->
+            <script src="js/jquery-1.10.2.min.js"></script> 
             <script src="js/bootstrap.min.js"></script>
-
-            <script 
-                src="js/jquery-1.10.2.min.js">
-            </script>
+            <script src="js/bootstrap.js"></script>
            
 
         </head>
         <body>
+        $html_AllPagesNavigation
         <div class="container">    
         <header>
         <h1>Create New Device</h1>
@@ -50,6 +48,7 @@ echo <<<END
         </section>
         </div>
         </body>
+        $html_AllPagesFooter
         </html>
     
 END;

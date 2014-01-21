@@ -1,20 +1,12 @@
 <?php
 include "database.php";
+include_once "inc_htmlBoilerplate.php";
 //shows a single chart that can be customized
 session_start();
 switch($_POST['action']){
     case 'makeChartFromTo': //build chartFrom and chartTo variables if user selected a set from and to date/time
-        $chartFrom = $_POST['fromYear'] . '-' .
-            $_POST['fromMonth'] . '-' .
-            $_POST['fromDay'] . ' ' .
-            $_POST['fromHour'] . ':' .
-            $_POST['fromMinute'] . ':00' ;
-        $chartTo = $_POST['toYear'] . '-' .
-            $_POST['toMonth'] . '-' .
-            $_POST['toDay'] . ' ' .
-            $_POST['toHour'] . ':' .
-            $_POST['toMinute'] . ':00' ;
-            
+        $chartFrom = $_POST['datetimepickerFrom'];
+        $chartTo = $_POST['datetimepickerTo'];
         break;
         
 }
@@ -41,66 +33,107 @@ elseif ($chartFrom == ""){ //create a chartFrom variable from Yesterday
 if ($_POST['chartTo'] != "") {
     $chartTo = $_POST['chartTo'];}
 elseif ($chartTo == "") {$chartTo = date("Y-m-d H:i:s");}
+$dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
+?>
 
 
 
-//header:
-echo <<<END
-   <!DOCTYPE html> 
+<!DOCTYPE html> 
    <html lang="en">
         <head>
             <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Devices View</title>
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+            <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+            <link rel="stylesheet" href="css/jquery.datetimepicker.css">
+            <link rel="stylesheet" href="css/jqueryui1.8.16/base/jquery.ui.all.css">
+            <link rel="stylesheet" type="text/css" href="jqplot/jquery.jqplot.css" />
             
-            <link rel="stylesheet"
-                href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery.ui.all.css">
-            <script 
-                src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
-            </script>
-            <script
-                src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
-            </script>
-
+            
+            <script src="js/jquery-1.10.2.min.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jqueryui1.8.16/jquery-ui.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.cursor.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
             <script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js"></script>
-            <link rel="stylesheet" type="text/css" href="jqplot/jquery.jqplot.css" />
+            <script language="javascript" type="text/javascript" src="js/jquery.datetimepicker.js"></script>
 
         </head>
         <body>
-            
+        <?php echo $html_AllPagesNavigation; ?>
+            <div class="container">
         <header>
-        <h1>Chart for Device: $deviceName</h1>
-        <h3>Showing all data from $chartFrom to $chartTo</h3>
+        <h1 class="well">Chart for Device: <?php echo $deviceName ?></h1>
+        <h4>Showing all data from <?php echo $chartFrom ?> to <?php echo $chartTo ?></h4>
         </header>
         <section id="main">
-        
-END;
 
-      
-$dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
+
+ <?php     
+
+
+
    
-    
+    $dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
     $html = makeChart($dataPointArray);
     echo $html;
-    echo "<h4>Make a new chart showing all data from:</h4>";
-    $html = makeChartFormFromTo($deviceMetric, $metricID, $deviceName, $deviceID);
-    echo $html;
-    echo "<h4>Alternatively, counting back from right now...</h4>";
+?>
+<h4>Make a new chart showing all data from:</h4>
+
+    <form id=showChartFromTo action="deviceviewsinglechart.php" method="post" class="chartFromToForm">
+        <input type="hidden" name="action"  value="makeChartFromTo">
+        <input type="hidden" name="deviceName" value="<?php echo $deviceName ?>">
+        <input type="hidden" name="deviceMetric" value="<?php echo $deviceMetric ?>">
+        <input type="hidden" name="deviceID" value="<?php echo $deviceID ?>">
+        <input type="hidden" name="metricID" value="<?php echo $metricID ?>">
+        
+
+
+
+        <input name ="datetimepickerFrom" id="datetimepickerFrom" type="text" >
+        <input name ="datetimepickerTo" id="datetimepickerTo" type="text" >
+        <button id="btnMakeChartDateRange"type="button" class="btn btn-sm btn-default">Go!</button>
+    </form>
+        <h4>Alternatively, counting back from right now...</h4>
+<?php    
     $html = makeChartForm($deviceMetric, $metricID, $deviceName, $deviceID);
     echo $html;
+?>
+<br><br><a href=index.php>back to devices list</a>
+        </section>
 
-    echo "<br><br><a href=\"index.php\">back to devices list</a></section></body></html>";
 
-    
+        <script>$('#datetimepickerFrom,#datetimepickerTo').datetimepicker({
+            format:'Y-m-d H:m:s'
+        });
+        </script>
+        <script>
+            $(document).ready(function() {
+                //placeholder
+            });
+        </script>
+        <script>
+
+        $("#btnMakeChartDateRange").click( function()
+           {
+             $('#showChartFromTo').submit();
+           }
+        );
+    </script>
+
+
+
+            </div>
+            <?php echo $html_AllPagesFooter ?>
+        </body>
+   
+   </html>
+
+<?php    
 function makeChart($datapoints) {
     global $deviceMetric;
     $stringDatapoints = "[";
@@ -118,8 +151,7 @@ function makeChart($datapoints) {
     $maxTime = max($timeArray);
     
     $stringDatapoints .= "]";
-    $html = "<div id=\"chart\" style=\"height:" . "500" . "px;width:" .
-            "800" . "px; \"></div>" . "\r\n" .
+    $html = "<div id=\"chart\" ></div>" . "\r\n" .
             "<script>$(document).ready(function(){
                 $.jqplot.config.enablePlugins = true;
                 var line1=$stringDatapoints;   
@@ -155,149 +187,9 @@ function makeChart($datapoints) {
     
 }
 
-function makeChartFormFromTo($deviceMetric, $deviceMetricID, $deviceName, $deviceID) {
- $html .=  "<form name=\"showFromTo$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartFromToForm\">" .
-        "<input type=\"hidden\" name=\"action\"  value=\"makeChartFromTo\">" .
-        "<input type=\"hidden\" name=\"deviceName\" value=\"" . $deviceName . "\">" .
-        "<input type=\"hidden\" name=\"deviceMetric\" value=\"" . $deviceMetric . "\">" .
-        "<input type=\"hidden\" name=\"deviceID\" value=\"" . $deviceID . "\">" .
-        "<input type=\"hidden\" name=\"metricID\" value=\"" . $deviceMetricID . "\">" .
-        "<select id=\"fromMonth\" name=\"fromMonth\">" .
-              "<option value=\"1\">Month</option>" .
-              "<option value=\"1\">January</option>" .
-              "<option value=\"2\">February</option>" .
-              "<option value=\"3\">March</option>" .
-              "<option value=\"4\">April</option>" .
-              "<option value=\"5\">May</option>" .
-              "<option value=\"6\">June</option>" .
-              "<option value=\"7\">July</option>" .
-              "<option value=\"8\">Augusth</option>" .
-              "<option value=\"9\">September</option>" .
-              "<option value=\"10\">October</option>" .
-              "<option value=\"11\">November</option>" .
-              "<option value=\"12\">December</option>" .
-              "</select>" .
-         
-         "<select id=\"fromDay\" name=\"fromDay\">" .
-                "<option value =\"1\">Day...</option>";
-              for($x=0; $x<32; $x++) {
-                  $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-         
-         "<select id=\"fromHour\" name=\"fromHour\">" .
-              "<option value=\"1\">Hour...</option>" .
-              "<option value=\"1\">1 AM</option>" .
-              "<option value=\"2\">2</option>" .
-              "<option value=\"3\">3</option>" .
-              "<option value=\"4\">4</option>" .
-              "<option value=\"5\">5</option>" .
-              "<option value=\"6\">6</option>" .
-              "<option value=\"7\">7</option>" .
-              "<option value=\"8\">8</option>" .
-              "<option value=\"9\">9</option>" .
-              "<option value=\"10\">10</option>" .
-              "<option value=\"11\">11</option>" .
-              "<option value=\"12\">12 PM</option>" .
-              "<option value=\"13\">1</option>" .
-              "<option value=\"14\">2</option>" .
-              "<option value=\"15\">3</option>" .
-              "<option value=\"16\">4</option>" .
-              "<option value=\"17\">5</option>" .
-              "<option value=\"18\">6</option>" .
-              "<option value=\"19\">7</option>" .
-              "<option value=\"20\">8</option>" .
-              "<option value=\"21\">9</option>" .
-              "<option value=\"22\">10</option>" .
-              "<option value=\"23\">11</option>" .
-              "<option value=\"24\">12 AM</option>" .
-              "</select>" .
-          "<select id=\"fromMinute\" name=\"fromMinute\">" .
-                "<option value =\"1\">Minute...</option>";
-              for($x=0; $x<61; $x++) {
-                  $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-                 
-          "<select id=\"fromYear\" name=\"fromYear\">" .
-          "<option value =\"2012\">Year...</option>";
-          for($x=2012; $x<2050; $x++) {
-             $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-          "<p>to...</p>" .
-              
-                 
-                 "<select id=\"toMonth\" name=\"toMonth\">" .
-              "<option value=\"1\">Month</option>" .
-              "<option value=\"1\">January</option>" .
-              "<option value=\"2\">February</option>" .
-              "<option value=\"3\">March</option>" .
-              "<option value=\"4\">April</option>" .
-              "<option value=\"5\">May</option>" .
-              "<option value=\"6\">June</option>" .
-              "<option value=\"7\">July</option>" .
-              "<option value=\"8\">Augusth</option>" .
-              "<option value=\"9\">September</option>" .
-              "<option value=\"10\">October</option>" .
-              "<option value=\"11\">November</option>" .
-              "<option value=\"12\">December</option>" .
-              "</select>" .
-         
-         "<select id=\"toDay\" name=\"toDay\">" .
-                "<option value =\"1\">Day...</option>";
-              for($x=0; $x<32; $x++) {
-                  $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-         
-         "<select id=\"toHour\" name=\"toHour\">" .
-              "<option value=\"1\">Hour...</option>" .
-              "<option value=\"1\">1 AM</option>" .
-              "<option value=\"2\">2</option>" .
-              "<option value=\"3\">3</option>" .
-              "<option value=\"4\">4</option>" .
-              "<option value=\"5\">5</option>" .
-              "<option value=\"6\">6</option>" .
-              "<option value=\"7\">7</option>" .
-              "<option value=\"8\">8</option>" .
-              "<option value=\"9\">9</option>" .
-              "<option value=\"10\">10</option>" .
-              "<option value=\"11\">11</option>" .
-              "<option value=\"12\">12 PM</option>" .
-              "<option value=\"13\">1</option>" .
-              "<option value=\"14\">2</option>" .
-              "<option value=\"15\">3</option>" .
-              "<option value=\"16\">4</option>" .
-              "<option value=\"17\">5</option>" .
-              "<option value=\"18\">6</option>" .
-              "<option value=\"19\">7</option>" .
-              "<option value=\"20\">8</option>" .
-              "<option value=\"21\">9</option>" .
-              "<option value=\"22\">10</option>" .
-              "<option value=\"23\">11</option>" .
-              "<option value=\"24\">12 AM</option>" .
-              "</select>" .
-          "<select id=\"toMinute\" name=\"toMinute\">" .
-                "<option value =\"1\">Minute...</option>";
-              for($x=0; $x<61; $x++) {
-                  $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-                 
-          "<select id=\"toYear\" name=\"toYear\">" .
-          "<option value =\"2012\">Year...</option>";
-          for($x=2012; $x<2050; $x++) {
-             $html .= "<option value=\"$x\">$x</option>" ;
-              }
-         $html .=  "</select>" .
-                 
-         "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"go!\">" .
-                 
-       "</form>" ;
-       return $html;
 
-}
+// $html .=  "<form name=\"showFromTo$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartFromToForm\">" .
+
 function makeChartForm($deviceMetric, $deviceMetricID, $deviceName, $deviceID) { //returns the html for the form that brings us to the deviceviewsinglechart.php page
        $html .=  "<form name=\"showLastX$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartForm\">" .
         "<input type=\"hidden\" name=\"action\"  value=\"makeChartLastX\">" .

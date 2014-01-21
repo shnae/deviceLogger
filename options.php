@@ -14,6 +14,7 @@ if ($_SESSION['chartSamples'] != "") {
 }
 else $chartSamples = 25;
 include_once 'database.php';
+include_once 'inc_htmlBoilerplate.php';
 $systemOptions = getSystemOptions();
 //var_dump($systemOptions);
 $systemOptionsArray = array();
@@ -37,20 +38,17 @@ echo <<<END
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Devices View</title>
-                        <!-- Latest compiled and minified CSS -->
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Device Logger: Devices List</title>
             <link rel="stylesheet" href="css/bootstrap.min.css">
-
-            <!-- Optional theme -->
+            <link rel="stylesheet" href="css/bootstrap.css">
             <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-            <!-- Latest compiled and minified JavaScript -->
+            <script src="js/jquery-1.10.2.min.js"></script> 
             <script src="js/bootstrap.min.js"></script>
-
-            <script 
-                src="js/jquery-1.10.2.min.js">
-            </script>
+            <script src="js/bootstrap.js"></script>
         </head>
         <body>
+            $html_AllPagesNavigation
             <div class="container">
 <div class="span8">
         <header>
@@ -97,6 +95,6 @@ echo <<<END
 END;
 
 
-echo "</section></div></div></body></html>";
+echo "</section></div></div></body>$html_AllPagesFooter</html>";
 
 ?>

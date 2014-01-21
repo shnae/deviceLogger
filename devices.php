@@ -1,5 +1,7 @@
 <?php
 //     
+include_once 'database.php';
+include_once 'inc_htmlBoilerplate.php';
 exec("sudo lsof -c python | grep devicereader", $output, $return); 
 if (sizeof($output) !==0 ) { //python is running and it's using files in the devicereader directory, we can assume it's running the service.
     $deviceLoggerProcessIsRunning = "";
@@ -11,94 +13,99 @@ echo <<<END
         <head>
         <meta charset="utf-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Devices List</title>
-            
-            <!-- Latest compiled and minified CSS -->
+            <title>Device Logger: Devices List</title>
             <link rel="stylesheet" href="css/bootstrap.min.css">
-
-            <!-- Optional theme -->
+            <link rel="stylesheet" href="css/bootstrap.css">
             <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-            <!-- Latest compiled and minified JavaScript -->
+            <script src="js/jquery-1.10.2.min.js"></script> 
             <script src="js/bootstrap.min.js"></script>
-
-            <script 
-                src="js/jquery-1.10.2.min.js">
-            </script>
-            
+            <script src="js/bootstrap.js"></script>
+   
         </head>
         <body>
-            
-        <div class = "container">    
+       $html_AllPagesNavigation
+
+        <div class="container">
         <header>
             <h5>$deviceLoggerProcessIsRunning</h5>
-        <h1>Devices</h1>
-        <h4><a id="optionsLink" href="#">Options</a></h4>
-        <form action='options.php' id="optionsForm">
-            <input type="NOThidden" name="action" value="options">
-        </form>
-        <h4><a id="newDeviceLink" href="#">Create New Device</a></h4>
-        <form action='index.php' id="newDeviceForm" method="post">
-            <input type="NOThidden" name="action" value="showNewDeviceForm">
-        </form>
+        <h1>Devices: <small>all devices</small></h1>
+       
+        
         </header>
         <section id="devices">
-            <table id="deviceTable"><tbody>
+        <div id="deviceMetricTableForm"></div>
             
 END;
 //Begin listing the individual Devices:
 $allDevices = getDevices();
 foreach ($allDevices as $device){
-    echo "<tr class=\"main\">\r\n\t\t\t\t";
-    echo "<td><span class=\"expand\">" . $device["Name"] . "</span>";
-    echo "<span class=\"deviceDescription\">" . $device["Description"] . "</span></td>\r\n\t\t\t"; 
-    echo "</tr>\r\n\t\t\t\t";
+    echo '<div class="row well">';
+    echo '<div class="col-xs-6 col-md-4">
+                <button type="button" class="btn btn-primary pull-left btnDevice" navBarDeviceID=' . $device["iddevices"] .'>' . $device["Name"] . '</button>
+                <h4>&nbsp' . $device["Description"] . '</h4>';
+    $deviceID = $device["iddevices"];
     
 
-    $deviceID = $device["iddevices"];
-    $html = htmlFormForDevice($device["iddevices"]);
-        echo $html;
     
+    
+
         $DeviceDataPoints = getDeviceDataPointArray($deviceID);
         if($DeviceDataPoints != ""){
-            foreach ($DeviceDataPoints as $dp) { //iterate through each device metric 
-                //and list the latest datapoint
-                echo "<tr class=\"NOTNOThidden\">\r\n\t\t\t\t<td  colspan= 2><span class=\"datapoint\">" 
-                    . $dp["name"] . ": " .
-                            $dp["datapoint"] . "</span></td>\r\t\t\t</tr>\r\n\t\t\t";
+            echo '<table class="table table-striped"><thead><tr><th>Metric</th><th>Last Value</th></tr></thead><tbody>';
+            foreach ($DeviceDataPoints as $dp) { //iterate through each device metric and list the latest datapoint
+                echo '<tr varDeviceName="' . $device["Name"] . '" varDeviceMetricName="' . $dp["name"] .  
+                        '"varDeviceID="' . $deviceID . '" varDeviceMetricID="' . $dp["iddevicemetrics"] . 
+                        '" class="deviceMetricList"><td>' . $dp["name"] . '</td><td>' . $dp["datapoint"] . 
+                      '</td></tr>';                
             }
+            
+      
+
+            echo '</tbody></table>';
         }
+        echo '</div></div>';
 }
 
-echo <<<END
+?>
            </tbody></table>
        </section>
        
        </div>
-            <script>
-               $("tr span.expand").click(function() {
-    $(this).parents("tr.main").nextUntil("tr.main").toggle("slow");
-});
-            </script>
-                
+        <script>$('.deviceMetricList').click(function(){
+            var deviceName = $(this).attr("varDeviceName");
+            var deviceID = $(this).attr("varDeviceID");
+            var deviceMetricName = $(this).attr("varDeviceMetricName");
+            var deviceMetricID = $(this).attr("varDeviceMetricID");
+            $("#deviceMetricTableForm").html(
+                    '<form action="deviceviewsinglechart.php" method="post">' +
+                    '<input type="hidden" name="action" value="makeChartDefault">' +
+                    '<input type="hidden" name="deviceName" value="' + deviceName + '">' +
+                        '<input type="hidden" name="deviceMetric" value="' + deviceMetricName + '">' +
+                        '<input type="hidden" name="deviceID" value="' + deviceID + '">' +
+                        '<input type="hidden" name="metricID" value="' + deviceMetricID + '">' +
+                        '</form>'
+                );
+            $("#deviceMetricTableForm form").submit();
+            });
+        </script>
        </body>
-      
-       <script>$('#optionsLink').click(function() { $('#optionsForm').submit();});</script>
-       <script>$('#newDeviceLink').click(function() { $('#newDeviceForm').submit();});</script>
+       
+
+       <?php echo $html_AllPagesFooter; ?>
        </html>
 
-END;
+<?php
 function htmlFormForDevice($deviceID){
     //display a view device button then an edit device button
     $html = "<tr class=\"NOThidden\"><td>\r\n\t\t\t\t" . 
         "<form name=\"show$deviceID\" action=\"index.php\" method=\"post\" class=\"deviceAction\">" .
-        "<input type=\"NOTNOThidden\" name=\"action\"  value=\"viewDevice\">" .
-        "<input type=\"NOThidden\" name=\"device\" value=\"" . $deviceID . "\">" .
+        "<input type=\"hidden\" name=\"action\"  value=\"viewDevice\">" .
+        "<input type=\"hidden\" name=\"device\" value=\"" . $deviceID . "\">" .
         "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"go to device page\"></form>" .
         
         "<form name=\"edit$deviceID\" action=\"index.php\" method=\"post\" class=\"deviceAction\">" .
-        "<input type=\"NOThidden\" name=\"action\"  value=\"editDevice\">" .
-        "<input type=\"NOThidden\" name=\"device\" value=\"" . $deviceID . "\">" .
+        "<input type=\"hidden\" name=\"action\"  value=\"editDevice\">" .
+        "<input type=\"hidden\" name=\"device\" value=\"" . $deviceID . "\">" .
         "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"edit this device\"></form>" .
         "<td></tr>";
            
