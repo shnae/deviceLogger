@@ -48,8 +48,8 @@ echo <<<END
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jpqlot/plugins/jqplot.cursor.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jpqlot/plugins/jqplot.cursor.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.cursor.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
             <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
             <link rel="stylesheet" type="text/css" href="jqplot/jquery.jqplot.css" />
@@ -63,28 +63,42 @@ echo <<<END
         
         </header>
         <section id="deviceInfo">
-            <div class="deviceSpecs">
+            <div class="row well">
+                <div class="col-xs-6 col-md-4">
                 <span>Host Name/IP address: <a href="http://$deviceHostName">$deviceHostName</a></span><br>
                 <span>Make: $deviceMake</span><br>
                 <span>Model: $deviceModel</span><br>
                 <span>URI: <a href="http://$deviceHostName/$deviceUrl">$deviceUrl</a></span><br>
+                <form name="frmEditDevice" action="index.php" method="post">
+                    <button onclick="document.frmEditDevice.submit()" type="button" class="btn btn-success btn-xs">Edit Device</button>
+                    <input type="hidden" name="action" value="editDevice">
+                    <input type="hidden" name="device" value="$deviceID">
+                </form>
+                
+                </div>
             </div>
         </section>
         <section id="datapoints"><h2>Datapoints:</h2><br></section>
 END;
+/*
+ *         case 'editDevice':
+            $deviceID = $_POST['device'];
+            include 'deviceedit.php';
+ */
+
 
 $DeviceDataPoints = getDeviceDataPointArray($deviceID);
     foreach ($DeviceDataPoints as $dp) { //iterate through each device metric 
         //and list the latest datapoint
-       echo   "<div>" . $dp["name"] . ": " . $dp["datapoint"] . 
-               " timestamp: " . $dp["timestamp"] . "<br></div>";
+       echo   '<div class="well"><h4>' . $dp["name"] . ": <small>" . $dp["datapoint"] . 
+               "<br>timestamp: " . $dp["timestamp"] . "</small><br></h4>";
         $points = array_reverse(getDatapointArray($deviceID, $dp["iddevicemetrics"], $chartSamples));
         //and draw a chart of each device metric:
         $html = makeChart($points, $dp["iddevicemetrics"], $dp["name"], $chartHeight, $chartWidth);
         echo $html;
         $html = makeChartForm($dp["name"],$dp["iddevicemetrics"], $deviceName, $deviceID);
         echo $html;
-        
+        echo "</div>";
     }
  
        echo "<a href=\"index.php\">back to devices list</a></div></body>$html_AllPagesFooter</html>";
@@ -113,7 +127,7 @@ function makeChartForm($deviceMetricName, $deviceMetricID, $deviceName, $deviceI
         "<input type=\"hidden\" name=\"deviceMetric\" value=\"" . $deviceMetricName . "\">" .
         "<input type=\"hidden\" name=\"deviceID\" value=\"" . $deviceID . "\">" .
         "<input type=\"hidden\" name=\"metricID\" value=\"" . $deviceMetricID . "\">" .
-        "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"make Custom Chart\"></form>" ;
+        "<input type=\"submit\" class=\"btn btn-sm btn-primary\" name=\"submit\" value=\"make Custom Chart\"></form>" ;
    return $html;
 }
 ?>

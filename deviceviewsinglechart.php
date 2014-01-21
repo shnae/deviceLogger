@@ -103,7 +103,7 @@ $dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom,
     $html = makeChartForm($deviceMetric, $metricID, $deviceName, $deviceID);
     echo $html;
 ?>
-<br><br><a href=index.php>back to devices list</a>
+
         </section>
 
 
@@ -188,8 +188,6 @@ function makeChart($datapoints) {
 }
 
 
-// $html .=  "<form name=\"showFromTo$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartFromToForm\">" .
-
 function makeChartForm($deviceMetric, $deviceMetricID, $deviceName, $deviceID) { //returns the html for the form that brings us to the deviceviewsinglechart.php page
        $html .=  "<form name=\"showLastX$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartForm\">" .
         "<input type=\"hidden\" name=\"action\"  value=\"makeChartLastX\">" .
@@ -209,11 +207,7 @@ function makeChartForm($deviceMetric, $deviceMetricID, $deviceName, $deviceID) {
               "<option value=\"-1 month\">Last month</option>" .
               "</select>" .
        "</form>" ;
-      $html .="<form name=\"show$deviceID\" action=\"index.php\" method=\"post\" class=\"deviceAction\">" .
-        "<input type=\"hidden\" name=\"action\"  value=\"viewDevice\">" .
-        "<input type=\"hidden\" name=\"device\" value=\"" . $deviceID . "\">" .
-        "<br>" .
-        "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"go back to device page\"></form>";
+
       $html .= "<script>$(function() {
                 $('#fromX').change(function() {
                     this.form.submit();
