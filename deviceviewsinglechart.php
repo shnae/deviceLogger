@@ -164,7 +164,7 @@ function makeChart($datapoints) {
                         followMouse: true,
                         constrainOutsideZoom: true,
                         clickReset: false,
-                        looseZoom: true,
+                        
                         showVerticalLine: false,
                         showHorizontalLine: false
             
@@ -174,8 +174,8 @@ function makeChart($datapoints) {
                             renderer:$.jqplot.DateAxisRenderer,
                             min: '$minTime',
                             max: '$maxTime',
-                            
-                            tickOptions:{showLabel: true, formatString:'%T'}
+                            numberTicks: 2,
+                            tickOptions:{showLabel: true, formatString:'%#c'}
                             },
                         yaxis: {min:$min, max:$max}
                     }

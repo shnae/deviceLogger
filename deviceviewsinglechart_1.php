@@ -1,7 +1,15 @@
 <?php
 include "database.php";
+include_once "inc_htmlBoilerplate.php";
 //shows a single chart that can be customized
 session_start();
+switch($_POST['action']){
+    case 'makeChartFromTo': //build chartFrom and chartTo variables if user selected a set from and to date/time
+        $chartFrom = $_POST['datetimepickerFrom'];
+        $chartTo = $_POST['datetimepickerTo'];
+        break;
+        
+}
 $deviceName = $_POST['deviceName'];
 $deviceMetric = $_POST['deviceMetric'];
 $deviceID = $_POST['deviceID'];
@@ -15,7 +23,7 @@ else {
 }
 if ($_POST['chartFrom'] != "") {
     $chartFrom = $_POST['chartFrom'];}
-else { //create a chartFrom variable from Yesterday
+elseif ($chartFrom == ""){ //create a chartFrom variable from Yesterday
     
     $yesterday = strtotime($fromX);
     $chartFrom = date("Y-m-d H:i:s", $yesterday);
@@ -24,80 +32,115 @@ else { //create a chartFrom variable from Yesterday
 
 if ($_POST['chartTo'] != "") {
     $chartTo = $_POST['chartTo'];}
-else {$chartTo = date("Y-m-d H:i:s");}
+elseif ($chartTo == "") {$chartTo = date("Y-m-d H:i:s");}
+$dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
+?>
 
-$action = $POST['action'];
 
-//header:
-echo <<<END
-   <!DOCTYPE html> 
+
+<!DOCTYPE html> 
    <html lang="en">
         <head>
             <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Devices View</title>
-            <link rel="stylesheet" type="text/css" href="stylesheet.css" />
-            <link rel="stylesheet"
-                href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery.ui.all.css">
-            <script 
-                src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
-            </script>
-            <script
-                src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
-            </script>
-
-            <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jpqlot/plugins/jqplot.cursor.min.js"></script>
-            <script language="javascript" type="text/javascript" src="jpqlot/plugins/jqplot.cursor.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.js"></script>
-            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
-
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+            <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+            <link rel="stylesheet" href="css/jquery.datetimepicker.css">
+            <link rel="stylesheet" href="css/jqueryui1.8.16/base/jquery.ui.all.css">
             <link rel="stylesheet" type="text/css" href="jqplot/jquery.jqplot.css" />
+            
+            
+            <script src="js/jquery-1.10.2.min.js"></script>
+            <script src="js/bootstrap.min.js"></script>
+            <script src="js/jqueryui1.8.16/jquery-ui.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/jquery.jqplot.min.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.dateAxisRenderer.min.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasAxisTickRenderer.min.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.cursor.min.js"></script>
+            <script language="javascript" type="text/javascript" src="jqplot/plugins/jqplot.canvasTextRenderer.min.js"></script>
+            <script type="text/javascript" src="jqplot/plugins/jqplot.highlighter.min.js"></script>
+            <script language="javascript" type="text/javascript" src="js/jquery.datetimepicker.js"></script>
 
         </head>
         <body>
-            
+        <?php echo $html_AllPagesNavigation; ?>
+            <div class="container">
         <header>
-        <h1>Chart for Device: $deviceName</h1>
-            <p>$chartTo </p>
+        <h1 class="well">Chart for Device: <?php echo $deviceName ?></h1>
+        <h4>Showing all data from <?php echo $chartFrom ?> to <?php echo $chartTo ?></h4>
         </header>
         <section id="main">
-        
-END;
-/*
-    $DeviceDataPoints = getDeviceDataPointArray($deviceID);
-    foreach ($DeviceDataPoints as $dp) { //iterate through each device metric 
-        //and list the latest datapoint
-       echo   "<div>" . $dp["name"] . ": " . $dp["datapoint"] . 
-               " timestamp: " . $dp["timestamp"] . "<br></div>";
-        $points = array_reverse(getDatapointArray($deviceID, $dp["iddevicemetrics"], $chartSamples));
-        //and draw a chart of each device metric:
-        $html = makeChart($points, $dp["iddevicemetrics"], $dp["name"], $chartHeight, $chartWidth);
-        echo $html;
-        echo "<p>here</p>";
-    }
- */
-      
-$dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
-    //var_dump($dataPointArray);
+
+
+ <?php     
+
+
+
+   
+    $dataPointArray = getDatapointArrayByDateRange($deviceID, $metricID, $chartFrom, $chartTo);
     $html = makeChart($dataPointArray);
     echo $html;
+?>
+<h4>Make a new chart showing all data from:</h4>
+
+    <form id=showChartFromTo action="deviceviewsinglechart.php" method="post" class="chartFromToForm">
+        <input type="hidden" name="action"  value="makeChartFromTo">
+        <input type="hidden" name="deviceName" value="<?php echo $deviceName ?>">
+        <input type="hidden" name="deviceMetric" value="<?php echo $deviceMetric ?>">
+        <input type="hidden" name="deviceID" value="<?php echo $deviceID ?>">
+        <input type="hidden" name="metricID" value="<?php echo $metricID ?>">
+        
+
+
+
+        <input name ="datetimepickerFrom" id="datetimepickerFrom" type="text" >
+        <input name ="datetimepickerTo" id="datetimepickerTo" type="text" >
+        <button id="btnMakeChartDateRange"type="button" class="btn btn-sm btn-default">Go!</button>
+    </form>
+        <h4>Alternatively, counting back from right now...</h4>
+<?php    
     $html = makeChartForm($deviceMetric, $metricID, $deviceName, $deviceID);
     echo $html;
-    echo "<br><a href=\"index.php\">back to devices list</a></section></body></html>";
+?>
 
-    
+        </section>
+
+
+        <script>$('#datetimepickerFrom,#datetimepickerTo').datetimepicker({
+            format:'Y-m-d H:m:s'
+        });
+        </script>
+        <script>
+            $(document).ready(function() {
+                //placeholder
+            });
+        </script>
+        <script>
+
+        $("#btnMakeChartDateRange").click( function()
+           {
+             $('#showChartFromTo').submit();
+           }
+        );
+    </script>
+
+
+
+            </div>
+            <?php echo $html_AllPagesFooter ?>
+        </body>
+   
+   </html>
+
+<?php    
 function makeChart($datapoints) {
     global $deviceMetric;
     $stringDatapoints = "[";
     $datapointArray = array();
     $timeArray = array();
     foreach ($datapoints as $datapoint) {
-        $stringDatapoints .= "[" . $datapoint["timestamp"] . "," . $datapoint["datapoint"] . "],";
+        $stringDatapoints .= "['" . $datapoint["timestamp"] . "'," . $datapoint["datapoint"] . "],";
         array_push($datapointArray, $datapoint["datapoint"]);
         array_push($timeArray, $datapoint["timestamp"]);
     }
@@ -108,27 +151,29 @@ function makeChart($datapoints) {
     $maxTime = max($timeArray);
     
     $stringDatapoints .= "]";
-    $html = "<div id=\"chart\" style=\"height:" . "500" . "px;width:" .
-            "800" . "px; \"></div>" . "\r\n" .
+    $html = "<div id=\"chart\" ></div>" . "\r\n" .
             "<script>$(document).ready(function(){
                 $.jqplot.config.enablePlugins = true;
                 var line1=$stringDatapoints;   
                  var plot = $.jqplot('chart$id', [line1], {
-                    
+                     
                     cursor:{
                         show:true,
                         zoom:true,
                         showTooltip:false,
                         followMouse: true,
-                        constrainOutsideZoom: false,
-                        clickReset: true
+                        constrainOutsideZoom: true,
+                        clickReset: false,
+                        looseZoom: true,
+                        showVerticalLine: false,
+                        showHorizontalLine: false
             
                     },
                     axes:{
                         xaxis: {
                             renderer:$.jqplot.DateAxisRenderer,
-                            min: $minTime,
-                            max: $maxTime,
+                            min: '$minTime',
+                            max: '$maxTime',
                             
                             tickOptions:{showLabel: true, formatString:'%T'}
                             },
@@ -141,15 +186,10 @@ function makeChart($datapoints) {
     
     
 }
+
+
 function makeChartForm($deviceMetric, $deviceMetricID, $deviceName, $deviceID) { //returns the html for the form that brings us to the deviceviewsinglechart.php page
-   /*$html =  "<form name=\"makeChartFor$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartForm\">" .
-        "<input type=\"hidden\" name=\"action\"  value=\"makeChartDefault\">" .
-        "<input type=\"hidden\" name=\"deviceName\" value=\"" . $deviceName . "\">" .
-        "<input type=\"hidden\" name=\"deviceMetric\" value=\"" . $deviceMetricName . "\">" .
-        "<input type=\"hidden\" name=\"deviceID\" value=\"" . $deviceID . "\">" .
-        "<input type=\"hidden\" name=\"metricID\" value=\"" . $deviceMetricID . "\">" .
-        "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"Refresh This Chart\"></form>" ;
-    */  $html .=  "<form name=\"showLastX$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartForm\">" .
+       $html .=  "<form name=\"showLastX$deviceName\" action=\"deviceviewsinglechart.php\" method=\"post\" class=\"chartForm\">" .
         "<input type=\"hidden\" name=\"action\"  value=\"makeChartLastX\">" .
         "<input type=\"hidden\" name=\"deviceName\" value=\"" . $deviceName . "\">" .
         "<input type=\"hidden\" name=\"deviceMetric\" value=\"" . $deviceMetric . "\">" .
@@ -167,10 +207,7 @@ function makeChartForm($deviceMetric, $deviceMetricID, $deviceName, $deviceID) {
               "<option value=\"-1 month\">Last month</option>" .
               "</select>" .
        "</form>" ;
-      $html .="<form name=\"show$deviceID\" action=\"index.php\" method=\"post\" class=\"deviceAction\">" .
-        "<input type=\"hidden\" name=\"action\"  value=\"viewDevice\">" .
-        "<input type=\"hidden\" name=\"device\" value=\"" . $deviceID . "\">" .
-        "<input type=\"submit\" class=\"buttons\" name=\"submit\" value=\"go back to device page\"></form>";
+
       $html .= "<script>$(function() {
                 $('#fromX').change(function() {
                     this.form.submit();
